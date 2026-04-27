@@ -108,7 +108,7 @@ namespace Awsim.Scene.AutowareSimulationDemo
             // _rtcAutoResponder.OnFixedUpdate();
         }
 
-        void SetPositionAndRotation(Vector3 rosPosition, Quaternion rosRotation)
+        public void SetPositionAndRotation(Vector3 rosPosition, Quaternion rosRotation)
         {
             Vector3 unityPos = new Vector3(
                 -rosPosition.y,

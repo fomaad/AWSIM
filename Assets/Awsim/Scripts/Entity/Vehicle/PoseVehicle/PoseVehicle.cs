@@ -14,7 +14,10 @@
 
 using UnityEngine;
 using System;
+using System.ComponentModel;
 using Awsim.Common;
+using Awsim.Common.AWSIM_Script;
+using Awsim.Common.TraceObjects;
 
 namespace Awsim.Entity
 {
@@ -470,6 +473,37 @@ namespace Awsim.Entity
             _leftTurnSignalLight.DestroyMaterial();
             _rightTurnSignalLight.DestroyMaterial();
             _brakeLight.DestroyMaterial();
+        }
+        
+        // get information
+        public Vector3 Position => _rigidbody.position;
+        public Vector3 Velocity => _lastVelocity;
+        public Vector3 Rotation => _rigidbody.rotation.eulerAngles;
+        public Quaternion RotationQ => _rigidbody.rotation;
+        public float EulerAnguleY => _rigidbody.rotation.eulerAngles.y;
+        public float YawAngularSpeed => _yawAngularSpeed;
+        public float Acceleration => _acceleration;
+        public string ScriptName { get; set; }
+        
+        public NPCConfig CustomConfig { get; set; }
+
+        // public Vector3 CenterPosition()
+        // {
+        //     var yaw = rigidbody.rotation.eulerAngles.y;
+        //     // var frontPos = Position + Quaternion.AngleAxis(yaw, Vector3.up) * new Vector3(0, 0, bounds.max.z);
+        //     // var backPos = Position + Quaternion.AngleAxis(yaw, Vector3.up) * new Vector3(0, 0, bounds.min.z);
+        //     // return (frontPos + backPos) / 2;
+        //     return Position + Quaternion.AngleAxis(yaw, Vector3.up) * new Vector3(0, 0, bounds.center.z);
+        // }
+        
+        public NPCDetailObject GetCarInfo()
+        {
+            return new NPCDetailObject()
+            {
+                name = ScriptName,
+                center = new Vector3Object(Bounds.center),
+                extents = new Vector3Object(Bounds.extents)
+            };
         }
     }
 }

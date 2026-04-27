@@ -392,6 +392,7 @@ namespace Awsim.Entity
 
             // Local acceleration.
             Vector3 acceleration = (Velocity - _lastVelocity) / Time.deltaTime;
+            WorldAcceleration = acceleration;
             LocalAcceleration = _transform.InverseTransformDirection(acceleration);
             _lastVelocity = Velocity;
 
@@ -531,5 +532,16 @@ namespace Awsim.Entity
                 }
             }
         }
+
+        #region new components
+
+        public Vector3 WorldAcceleration { get; private set; }
+
+        public Vector3 Position => _rigidbody.position;
+        public Quaternion Rotation => _rigidbody.rotation;
+        
+        #endregion
+        
+        
     }
 }

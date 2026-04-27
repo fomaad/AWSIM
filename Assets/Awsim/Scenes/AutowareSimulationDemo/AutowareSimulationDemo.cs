@@ -20,6 +20,7 @@ using Awsim.Usecase;
 using Awsim.Usecase.AwsimRvizPlugins;
 using Awsim.Usecase.TrafficSimulation;
 using Awsim.Entity;
+using Awsim.Usecase.DynamicSimulation;
 
 namespace Awsim.Scene.AutowareSimulationDemo
 {
@@ -80,6 +81,11 @@ namespace Awsim.Scene.AutowareSimulationDemo
         [SerializeField] bool _useJsonConfig;
         [Tooltip("Specify this Path if you want to debug Json loading at Unity Editor runtime.")]
         [SerializeField] string _jsonPath;
+        
+        [Header("Dynamic Simulation")]
+        // dynamic control functionalities
+        [SerializeField]
+        DynamicSimulationControl _dynamicSimControl;
 
         void Start()
         {
@@ -145,6 +151,8 @@ namespace Awsim.Scene.AutowareSimulationDemo
             _vehicleInputDeviceUIWindow.ControlModeBasedInputter = _egoVehicle.ControlModeBasedInputProvider;
 
             _awsimCanvas.Initialize();
+            
+            _dynamicSimControl.Initialize();
         }
 
         void Update()
@@ -169,10 +177,15 @@ namespace Awsim.Scene.AutowareSimulationDemo
 
             // Update UI.
             _awsimCanvas.OnUpdate();
+            
+            // for dynamic simulation
+            _dynamicSimControl.OnUpdate();
         }
 
         void FixedUpdate()
         {
+            var temp = this.gameObject.GetComponentsInChildren<Pedestrian>();
+            Debug.Log($"Number of pedestrians: {temp.Length}");
             // Fixed update traffic.
             _trafficSimulator.OnFixedUpdate();
 
@@ -187,6 +200,8 @@ namespace Awsim.Scene.AutowareSimulationDemo
 
             if (_useV2i)
                 _v2i.OnFixedUpdate();
+            
+            _dynamicSimControl.OnFixedUpdate();
         }
     }
 }

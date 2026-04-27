@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Awsim.Common.AWSIM_Script;
 using UnityEngine;
 
 namespace Awsim.Usecase.TrafficSimulation
@@ -316,5 +317,31 @@ namespace Awsim.Usecase.TrafficSimulation
                 out var laneLenght);
             return (1f - laneFollowingProgress) * laneLenght;
         }
+
+        #region Custom config
+
+        // custom config
+        public NPCConfig CustomConfig { get; set; }
+        
+        // return the desired speed for a given lane
+        public float TargetSpeed(TrafficLane lane)
+        {
+            // velocity during lane change
+            if (CustomConfig.HasALaneChange() &&
+                CurrentFollowingLane.name == CustomConfig.LaneChange.TargetLane &&
+                WaypointIndex == CustomConfig.LaneChange.TargetLaneWaypointIndex)
+            {
+                var speed = new Vector2(CustomConfig.LaneChange.LongitudinalVelocity,
+                    CustomConfig.LaneChange.LateralVelocity).magnitude;
+                return speed;
+            }
+            if (CustomConfig.HasDesiredSpeed(lane.name))
+                return CustomConfig.GetDesiredSpeed(lane.name);
+            if (CustomConfig.IsOverallTargetSpeedDefined())
+                return Mathf.Min(CustomConfig.TargetSpeed, lane.SpeedLimit);
+            return lane.SpeedLimit;
+        }
+
+        #endregion
     }
 }

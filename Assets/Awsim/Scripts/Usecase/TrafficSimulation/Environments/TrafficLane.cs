@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Awsim.Common.DynamicCommand;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -109,6 +111,9 @@ namespace Awsim.Usecase.TrafficSimulation
         [FormerlySerializedAs("speedLimit")]
         [SerializeField, Tooltip("Speed limit in m/s")]
         float _speedLimit;
+        
+        [SerializeField, Tooltip("Lane width in m"), Value()]
+        float _laneWidth = 3.5f;
 
         /// <summary>
         /// Create <see cref="TrafficLane"/> instance in the scene.<br/>
@@ -126,5 +131,55 @@ namespace Awsim.Usecase.TrafficSimulation
             trafficLane._speedLimit = speedLimit;
             return trafficLane;
         }
+        
+        public float Width => _laneWidth == 0f ? 3.5f : _laneWidth;
+        
+        public float DistanceUpToWaypoint(int waypointIndex)
+        {
+            float distance = 0;
+            for (int i = 0; i < waypointIndex; i++)
+                distance += DynamicSimUtils.DistanceIgnoreYAxis(_waypoints[i + 1], _waypoints[i]);
+            return distance;
+        }
+
+        public float TotalLength()
+        {
+            float totalLen = 0;
+            for (int i = 0; i < _waypoints.Length - 1; i++)
+                totalLen += DynamicSimUtils.DistanceIgnoreYAxis(_waypoints[i + 1], _waypoints[i]);
+            return totalLen;
+        }
+
+        // public string OriginName()
+        // {
+        //     Regex r = new Regex(NPCConfig.CLONE_PATTERN);
+        //     var matches = r.Match(name);
+        //     if (!matches.Success || matches.Groups.Count < 2)
+        //         return name;
+        //     return matches.Groups[1].ToString();
+        // }
+
+        public void ResetNextLanes(List<TrafficLane> _nextLanes)
+        {
+            this._nextLanes = _nextLanes;
+        }
+        
+        public void ResetPrevLanes(List<TrafficLane> _prevLanes)
+        {
+            this._prevLanes = _prevLanes;
+        }
+        public void SetSpeedLimit(float speedLimit)
+        {
+            this._speedLimit = speedLimit;
+        }
+
+        #region new methods
+
+        public void UpdateWaypoints(Vector3[] upWaypoints)
+        {
+            this._waypoints = upWaypoints;
+        }
+
+        #endregion
     }
 }

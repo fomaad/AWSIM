@@ -107,8 +107,15 @@ namespace RGLUnityPlugin
 
         private static List<LidarSensor> activeSensors = new List<LidarSensor>();
 
-        public void Awake()
+        public void OnAwake(bool noiseEnabled)
         {
+            if (!noiseEnabled)
+            {
+                applyAngularGaussianNoise = false;
+                applyDistanceGaussianNoise = false;
+                applyVelocityDistortion = false;
+            }
+            
             rglGraphLidar = new RGLNodeSequence()
                 .AddNodeRaysFromMat3x4f(lidarRaysNodeId, new Matrix4x4[1] { Matrix4x4.identity })
                 .AddNodeRaysSetRange(lidarRangeNodeId, new Vector2[1] { new Vector2(0.0f, Mathf.Infinity) })

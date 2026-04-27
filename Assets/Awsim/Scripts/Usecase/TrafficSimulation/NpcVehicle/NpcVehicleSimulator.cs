@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Awsim.Common.AWSIM_Script;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -73,6 +74,13 @@ namespace Awsim.Usecase.TrafficSimulation
         public void Register(TrafficSimNpcVehicle vehicle, TrafficLane lane, int waypointIndex)
         {
             _vehicleStates.Add(NpcVehicleInternalState.Create(vehicle, lane, waypointIndex));
+        }
+        
+        public void Register(TrafficSimNpcVehicle vehicle, TrafficLane lane, int waypointIndex, NPCConfig customConfig)
+        {
+            var internalState = NpcVehicleInternalState.Create(vehicle, lane, waypointIndex);
+            internalState.CustomConfig = customConfig;
+            _vehicleStates.Add(internalState);
         }
 
         /// <summary>

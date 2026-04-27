@@ -66,26 +66,58 @@ namespace Awsim.Usecase.TrafficSimulation
             {
                 foreach (var state in States)
                 {
-                    var isCloseToTarget = state.DistanceToCurrentWaypoint <= 1f;
+                    var isCloseToTarget = IsCloseToTarget(state);
 
                     if (!isCloseToTarget)
                         continue;
-
-                    if (state.WaypointIndex >= state.CurrentFollowingLane.Waypoints.Length - 1)
+                    
+                    // if change lane soon
+                    if (state.CustomConfig.HasALaneChange() &&
+                        state.CurrentFollowingLane.name == state.CustomConfig.LaneChange.SourceLane &&
+                        state.WaypointIndex == state.CustomConfig.LaneChange.SourceLaneWaypointIndex)
                     {
                         state.ExtendFollowingLane();
                         state.RemoveCurrentFollowingLane();
-                        state.WaypointIndex = 1;
+                        state.WaypointIndex = state.CustomConfig.LaneChange.TargetLaneWaypointIndex;
                     }
                     else
                     {
-                        state.WaypointIndex++;
+
+                        if (state.WaypointIndex >= state.CurrentFollowingLane.Waypoints.Length - 1)
+                        {
+                            state.ExtendFollowingLane();
+                            state.RemoveCurrentFollowingLane();
+                            state.WaypointIndex = 1;
+                        }
+                        else
+                        {
+                            state.WaypointIndex++;
+                        }
                     }
 
                     // Despawn if there are no lanes to follow.
                     if (state.FollowingLanes.Count == 0)
                         state.ShouldDespawn = true;
                 }
+            }
+            
+            private bool IsCloseToTarget(NpcVehicleInternalState state)
+            {
+                var tightDis = Mathf.Max(Time.fixedDeltaTime * state.Speed, 0.1f);
+                
+                // if following custom defined waypoints
+                if (state.CustomConfig.FollowCustomWaypoints)
+                    return state.DistanceToCurrentWaypoint <= tightDis;
+                
+                // during a lane change
+                if (state.CustomConfig.HasALaneChange() && 
+                    ((state.CurrentFollowingLane.name == state.CustomConfig.LaneChange.TargetLane &&
+                      state.WaypointIndex == state.CustomConfig.LaneChange.TargetLaneWaypointIndex) ||
+                     (state.CurrentFollowingLane.name == state.CustomConfig.LaneChange.SourceLane &&
+                      state.WaypointIndex == state.CustomConfig.LaneChange.SourceLaneWaypointIndex)))
+                    return state.DistanceToCurrentWaypoint <= tightDis;
+
+                return state.DistanceToCurrentWaypoint <= 1f;
             }
         }
 

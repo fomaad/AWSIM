@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Awsim.Common.TraceObjects;
 using UnityEngine;
 
 namespace Awsim.Common
@@ -107,6 +108,50 @@ namespace Awsim.Common
         public static Vector3 UnityToRos2AngularVelocity(Vector3 unityAngularVelocity)
         {
             return UnityToRos2Position(-unityAngularVelocity);
+        }
+
+
+        public static Vector3 UnityToRosMGRS(Vector3 position)
+        {
+            var offset = MgrsPosition.Instance.Mgrs.Position;
+            return new Vector3(position.z + offset.x,
+                -position.x + offset.y,
+                position.y + offset.z);
+        }
+        
+        /// <summary>
+        /// Convert position from ROS (MGRS) to Unity (word coordinate system).
+        /// </summary>
+        /// <param name="rosPosition">position by ROS in MGRS</param>
+        /// <returns>position by Unity in Unity WORLD</returns>
+        public static Vector3 RosMGRSToUnityPosition(geometry_msgs.msg.Point rosPosition)
+        {
+            var offset = MgrsPosition.Instance.Mgrs.Position;
+            return new Vector3(-(float)(rosPosition.Y - offset.y),
+                (float)(rosPosition.Z - offset.z),
+                (float)(rosPosition.X - offset.x));
+        }
+        public static Vector3 RosMGRSToUnityPosition(Vector3Object rosPosition)
+        {
+            var offset = MgrsPosition.Instance.Mgrs.Position;
+            return new Vector3(-(float)(rosPosition.y - offset.y),
+                (float)(rosPosition.z - offset.z),
+                (float)(rosPosition.x - offset.x));
+        }
+        
+        /// <summary>
+        /// Convert position from Unity to ROS.
+        /// </summary>
+        /// <param name="unityPosition">position by Unity</param>
+        /// <returns>position by ROS</returns>
+        public static Vector3 UnityToRosPosition(Vector3 unityPosition)
+        {
+            return new Vector3(unityPosition.z, -unityPosition.x, unityPosition.y);
+        }
+
+        public static Quaternion RosToUnityRotation(QuaternionObject rosQuaternion)
+        {
+            return new Quaternion((float)rosQuaternion.y, (float)-rosQuaternion.z, (float)-rosQuaternion.x, (float)rosQuaternion.w);
         }
     }
 }

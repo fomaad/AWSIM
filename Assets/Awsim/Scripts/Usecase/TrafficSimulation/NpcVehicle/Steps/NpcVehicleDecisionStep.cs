@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Awsim.Common.AWSIM_Script;
 using UnityEngine;
 
 namespace Awsim.Usecase.TrafficSimulation
@@ -102,6 +103,10 @@ namespace Awsim.Usecase.TrafficSimulation
             {
                 return;
             }
+            
+            var normalDeceleration = config.Deceleration;
+            if (!state.CustomConfig.Deceleration.Equals(NPCConfig.DUMMY_DECELERATION))
+                normalDeceleration = state.CustomConfig.Deceleration;
 
             var absoluteStopDistance = CalculateStoppableDistance(state.Speed, config.AbsoluteDeceleration) + _minStopDistance;
             var suddenStopDistance = CalculateStoppableDistance(state.Speed, config.SuddenDeceleration) + 2 * _minStopDistance;
@@ -118,17 +123,28 @@ namespace Awsim.Usecase.TrafficSimulation
             {
                 state.IsStoppedByFrontVehicle = true;
             }
-
-            if (distanceToStopPoint <= absoluteStopDistance)
-                state.SpeedMode = NpcVehicleSpeedMode.AbsoluteStop;
-            else if (distanceToStopPoint <= suddenStopDistance)
-                state.SpeedMode = NpcVehicleSpeedMode.SuddenStop;
-            else if (distanceToStopPoint <= stopDistance)
-                state.SpeedMode = NpcVehicleSpeedMode.Stop;
-            else if (distanceToStopPoint <= slowDownDistance || state.IsTurning)
-                state.SpeedMode = NpcVehicleSpeedMode.Slow;
+            
+            if (state.CustomConfig.AggressiveDrive)
+            {
+                stopDistance = CalculateStoppableDistance(state.Speed, normalDeceleration);
+                if (distanceToStopPoint <= stopDistance + _minStopDistance)
+                    state.SpeedMode = NpcVehicleSpeedMode.Stop;
+                else
+                    state.SpeedMode = NpcVehicleSpeedMode.Normal;
+            }
             else
-                state.SpeedMode = NpcVehicleSpeedMode.Normal;
+            {
+                if (distanceToStopPoint <= absoluteStopDistance)
+                    state.SpeedMode = NpcVehicleSpeedMode.AbsoluteStop;
+                else if (distanceToStopPoint <= suddenStopDistance)
+                    state.SpeedMode = NpcVehicleSpeedMode.SuddenStop;
+                else if (distanceToStopPoint <= stopDistance)
+                    state.SpeedMode = NpcVehicleSpeedMode.Stop;
+                else if (distanceToStopPoint <= slowDownDistance || state.IsTurning)
+                    state.SpeedMode = NpcVehicleSpeedMode.Slow;
+                else
+                    state.SpeedMode = NpcVehicleSpeedMode.Normal;
+            }
         }
 
         static float CalculateTrafficLightDistance(NpcVehicleInternalState state, float suddenStopDistance)

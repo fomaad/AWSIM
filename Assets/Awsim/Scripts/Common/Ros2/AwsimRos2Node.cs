@@ -239,5 +239,16 @@ namespace Awsim.Common
                 e.UpdateHeaderTime(seconds, nanoseconds);
             }
         }
+        
+        /// <summary>
+        /// Get current time
+        /// </summary>
+        /// <returns></returns>
+        static public builtin_interfaces.msg.Time GetCurrentRosTime()
+        {
+            var timeMsg = new builtin_interfaces.msg.Time();
+            _ros2Node.clock.UpdateROSClockTime(timeMsg);
+            return timeMsg;
+        }
     }
 }

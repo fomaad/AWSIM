@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Awsim.Common.AWSIM_Script;
 using UnityEngine;
 
 namespace Awsim.Usecase.TrafficSimulation
@@ -47,15 +48,10 @@ namespace Awsim.Usecase.TrafficSimulation
         static void UpdateYawSpeed(NpcVehicleInternalState state, float deltaTime)
         {
             // Steering the vehicle so that it heads toward the target point.
-            var steeringDirection = state.TargetPoint - state.FrontCenterPosition;
+            var steeringDirection = state.TargetPoint - state.Position;
             steeringDirection.y = 0f;
             var steeringAngle = Vector3.SignedAngle(state.Forward, steeringDirection, Vector3.up);
-            var targetYawSpeed = steeringAngle * state.Speed * NpcVehicleConfig.YawSpeedMultiplier;
-            // Change YawSpeed gradually to eliminate steering shake.
-            state.YawSpeed = Mathf.Lerp(
-                state.YawSpeed,
-                targetYawSpeed,
-                NpcVehicleConfig.YawSpeedLerpFactor * deltaTime);
+            state.YawSpeed = 2 * state.Speed * Mathf.Sin(steeringAngle/180*Mathf.PI)/(state.TargetPoint - state.FrontCenterPosition).magnitude * 180/Mathf.PI;
         }
 
         /// <summary>
@@ -86,12 +82,16 @@ namespace Awsim.Usecase.TrafficSimulation
             switch (state.SpeedMode)
             {
                 case NpcVehicleSpeedMode.Normal:
-                    targetSpeed = state.CurrentFollowingLane.SpeedLimit;
+                    targetSpeed = state.TargetSpeed(state.CurrentFollowingLane);
                     acceleration = _config.Acceleration;
+                    if (!state.CustomConfig.Acceleration.Equals(NPCConfig.DUMMY_ACCELERATION))
+                        acceleration = state.CustomConfig.Acceleration;
                     break;
                 case NpcVehicleSpeedMode.Slow:
-                    targetSpeed = Mathf.Min(NpcVehicleConfig.SlowSpeed, state.CurrentFollowingLane.SpeedLimit);
+                    targetSpeed = Mathf.Min(NpcVehicleConfig.SlowSpeed, state.TargetSpeed(state.CurrentFollowingLane));
                     acceleration = _config.Deceleration;
+                    if (!state.CustomConfig.Deceleration.Equals(NPCConfig.DUMMY_DECELERATION))
+                        acceleration = state.CustomConfig.Deceleration;
                     break;
                 case NpcVehicleSpeedMode.SuddenStop:
                     targetSpeed = 0f;
@@ -104,6 +104,8 @@ namespace Awsim.Usecase.TrafficSimulation
                 case NpcVehicleSpeedMode.Stop:
                     targetSpeed = 0f;
                     acceleration = _config.Deceleration;
+                    if (!state.CustomConfig.Deceleration.Equals(NPCConfig.DUMMY_DECELERATION))
+                        acceleration = state.CustomConfig.Deceleration;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

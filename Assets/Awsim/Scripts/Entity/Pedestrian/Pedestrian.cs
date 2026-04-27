@@ -101,5 +101,43 @@ namespace Awsim.Entity
         {
             return position - _referencePoint.position + transform.position;
         }
+
+        #region custom methods
+        public SkinnedMeshRenderer GetSuitMeshRenderer()
+        {
+            return GetComponentsInChildren<SkinnedMeshRenderer>()[7];
+        }
+        public SkinnedMeshRenderer GetShoesMeshRenderer()
+        {
+            return GetComponentsInChildren<SkinnedMeshRenderer>()[9];
+        }
+        public SkinnedMeshRenderer GetHeadMeshRenderer()
+        {
+            return GetComponentsInChildren<SkinnedMeshRenderer>()[11];
+        }
+        public SkinnedMeshRenderer GetBodyMeshRenderer()
+        {
+            return GetComponentsInChildren<SkinnedMeshRenderer>()[1];
+        }
+        
+        // public void SetPosition(Vector3 position)
+        // {
+        //     var rootPosition = ConvertReferenceToRoot(position);
+        //     var groundPosition = FollowGround(rootPosition);
+        //     GetComponent<Rigidbody>().MovePosition(groundPosition);
+        // }
+        //
+        // /// <summary>
+        // /// Rotate the pedestrian so that the orientation of the reference point becomes <paramref name="rotation"/>.<br/>
+        // /// This method should be called from FixedUpdate because <see cref="Rigidbody"/> is updated internally.
+        // /// </summary>
+        // /// <param name="rotation">New rotation of the <see cref="ReferencePoint"/>.</param>
+        // public void SetRotation(Quaternion rotation)
+        // {
+        //     var rootRotation = ConvertReferenceToRoot(rotation);
+        //     _rigidbody.MoveRotation(rootRotation);
+        // }
+        #endregion
+        
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Awsim.Common.DynamicCommand;
 using UnityEngine;
 
 namespace Awsim.Usecase.TrafficSimulation
@@ -35,6 +36,24 @@ namespace Awsim.Usecase.TrafficSimulation
             Forward = waypointIndex == lane.Waypoints.Length - 1
                 ? Position - lane.Waypoints[waypointIndex - 1]
                 : lane.Waypoints[waypointIndex + 1] - Position;
+        }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lane"></param>
+        /// <param name="position"></param>
+        /// <param name="waypointIndex">refer to the waypoint ahead of the $position</param>
+        public NpcVehicleSpawnPoint(TrafficLane lane, Vector3 position, int waypointIndex)
+        {
+            Lane = lane;
+            WaypointIndex = waypointIndex;
+            Position = position;
+            if (DynamicSimUtils.DistanceIgnoreYAxis(position, lane.Waypoints[waypointIndex]) < 0.05f &&
+                waypointIndex > 0)
+                Forward = lane.Waypoints[waypointIndex] - lane.Waypoints[waypointIndex - 1];
+            else
+                Forward = lane.Waypoints[waypointIndex] - position;
         }
     }
 
@@ -134,6 +153,19 @@ namespace Awsim.Usecase.TrafficSimulation
 
             return vehicle;
         }
+        
+        public TrafficSimNpcVehicle Spawn(TrafficSimNpcVehicle prefab, uint vehicleId, NpcVehicleSpawnPoint npcVehicleSpawnPoint,
+            Quaternion rotation)
+        {
+            var obj = Object.Instantiate(prefab, npcVehicleSpawnPoint.Position, rotation);
+            obj.name = obj.name + "_" + vehicleId.ToString();
+            obj.transform.forward = npcVehicleSpawnPoint.Forward;
+            obj.transform.parent = _NpcVehicleParentsObj.transform;
+            var vehicle = obj.GetComponent<TrafficSimNpcVehicle>();
+            vehicle.Initialize(vehicleId);
+
+            return vehicle;
+        }
 
         /// <summary>
         /// Destroy <paramref name="vehicle"/>
@@ -157,6 +189,11 @@ namespace Awsim.Usecase.TrafficSimulation
             }
 
             return spawnablePoints;
+        }
+
+        public NpcVehicleSpawner(GameObject parentGameObject)
+        {
+            _NpcVehicleParentsObj = parentGameObject;
         }
     }
 }
