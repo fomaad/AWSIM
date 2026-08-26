@@ -99,6 +99,8 @@ namespace Awsim.Usecase.DynamicSimulation
 
             // update pedestrian poses
             UpdatePedestrians();
+            
+            Despawn();
         }
 
         public void OnUpdate()
@@ -107,6 +109,19 @@ namespace Awsim.Usecase.DynamicSimulation
             {
                 entry.Item2.OnUpdate();
             }
+        }
+        
+        void Despawn()
+        {
+            foreach (var state in _npcVehicleSimulator.VehicleStates)
+            {
+                if (state.ShouldDespawn)
+                {
+                    Debug.Log($"Despawning vehicle {state.Vehicle.name}...");
+                    UnityEngine.Object.DestroyImmediate(state.Vehicle.gameObject);
+                }
+            }
+            _npcVehicleSimulator.RemoveInvalidVehicles();
         }
 
         /// <summary>
@@ -244,12 +259,14 @@ namespace Awsim.Usecase.DynamicSimulation
         // despawn NPC immediately
         public static bool DespawnNPC(TrafficSimNpcVehicle vehicle)
         {
+            Instance._npcs.Remove(vehicle);
             var internalState = Instance._npcVehicleSimulator.VehicleStates.FirstOrDefault(state =>
                 state.Vehicle == vehicle);
             if (internalState != null)
-                internalState.ShouldDespawn = true;
-            UnityEngine.Object.DestroyImmediate(vehicle.gameObject);
-            Instance._npcs.Remove(vehicle);
+            {
+                internalState.ShouldDespawn = true; // to be despawned in the next OnFixedUpdate()
+            }
+            // UnityEngine.Object.Destroy(vehicle.gameObject);
             return true;
         }
         
@@ -270,8 +287,8 @@ namespace Awsim.Usecase.DynamicSimulation
             var internalState = Instance._pedestrians.Find(entry => entry.Item1.Name == pedestrian.Name);
             if (internalState != null)
             {
-                UnityEngine.Object.Destroy(internalState.Item2.gameObject);
                 Instance._pedestrians.Remove(internalState);
+                UnityEngine.Object.Destroy(internalState.Item2.gameObject);
                 return true;
                 // Debug.LogError($"[AWAnalysis] Could not find internal state of {vehicle}.");
             }

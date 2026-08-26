@@ -290,6 +290,7 @@ namespace Awsim.Usecase.TrafficSimulation
             {
                 if (state.ShouldDespawn)
                 {
+                    Debug.Log($"Despawning vehicle {state.Vehicle.name}");
                     Object.DestroyImmediate(state.Vehicle.gameObject);
                     _trafficSimNpcVehicleList.Remove(state.Vehicle);
                 }

@@ -109,6 +109,8 @@ namespace RGLUnityPlugin
 
         public void OnAwake(bool noiseEnabled)
         {
+            string log = noiseEnabled ? "enabled" : "disabled";
+            Debug.Log($"LiDAR noise is {log}.");
             if (!noiseEnabled)
             {
                 applyAngularGaussianNoise = false;
