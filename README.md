@@ -15,11 +15,11 @@ The environment requirements are listed here: https://autowarefoundation.github.
 Please follow the installation instructions in the Autoware repo: https://autowarefoundation.github.io/autoware-documentation/main/installation/additional-settings-for-developers/network-configuration/dds-settings/#tune-dds-settings to make:
 - DDS configuration
 - CycloneDDS configuration
-- Nvidia GPU driver installation (Skip if already installed).
+- NVIDIA GPU driver installation (Skip if already installed).
 
 ## Launching Binary Release
 
-You can download a binary release from TODO, unzip it, and launch the simulator using:
+You can download a binary release from [here](https://github.com/fomaad/AWSIM/releases/download/v1.0.0/AWSIM.zip), unzip it, and launch the simulator using:
 
 ```bash
 ./awsim.x86_64
@@ -27,7 +27,7 @@ You can download a binary release from TODO, unzip it, and launch the simulator 
 
 It may take some time for the application to start.
 
-By default, Gaussian noise is added to the simulated data of LiDAR sensors. Use option -noise false to disable this noise.
+By default, Gaussian noise is added to the simulated data of LiDAR sensors. Use option `-noise` false to disable this noise.
 
 ```bash
 ./awsim.x86_64 -noise false
