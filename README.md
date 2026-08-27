@@ -58,7 +58,11 @@ docker pull duongtd23/awsim-autoware171:latest
 
 Then, run the docker image with the following command:
 ```
-docker run --rm -it --gpus all --net=host --ipc=host --cap-add=NET_ADMIN -e DISPLAY=$DISPLAY -e XDG_RUNTIME_DIR=/run/user/$(id -u) -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all,graphics,compute -v /tmp/.docker.xauth:/tmp/.docker.xauth:rw -e RCUTILS_COLORIZED_OUTPUT=1 awsim-autoware171:latest /bin/bash
+docker run --rm -it --gpus all --net=host --ipc=host --cap-add=NET_ADMIN \
+    -e DISPLAY=$DISPLAY -e XDG_RUNTIME_DIR=/run/user/$(id -u) \
+    -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all,graphics,compute \
+    -v /tmp/.docker.xauth:/tmp/.docker.xauth:rw -e RCUTILS_COLORIZED_OUTPUT=1 \
+    duongtd23/awsim-autoware171:latest /bin/bash
 ```
 
 Then, connect one more terminal to the container by running the following command in another terminal:
@@ -127,15 +131,15 @@ To record camera video and other data during simulation, you can run the followi
 cd /home/aw/AW-Runtime-Monitor
 source /home/aw/autoware/install/setup.bash
 source .venv/bin/activate
-python main.py -o <path-to-folder-to-save-traces> -v false
+python main.py -o <path-to-folder-to-save-traces>
 ```
 
-where the options `-v false` disable shielding. By default, it is enabled.
+By default, it is enabled.
 For more details about the tool usage, use `python main.py -h`.
 
 ```bash
 $ python main.py -h
-usage: main.py [-h] [-o OUTPUT] [-f {json,yaml}] [-n NO_SIM] [-v {true,false}]
+usage: main.py [-h] [-o OUTPUT] [-f {json,yaml}] [-n NO_SIM]
 
 Runtime Monitor for Autoware and AWSIM simulator. Adjust the component to record data by modifying
 file config.yaml
