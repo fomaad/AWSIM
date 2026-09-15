@@ -184,8 +184,6 @@ namespace Awsim.Scene.AutowareSimulationDemo
 
         void FixedUpdate()
         {
-            var temp = this.gameObject.GetComponentsInChildren<Pedestrian>();
-            Debug.Log($"Number of pedestrians: {temp.Length}");
             // Fixed update traffic.
             _trafficSimulator.OnFixedUpdate();
 

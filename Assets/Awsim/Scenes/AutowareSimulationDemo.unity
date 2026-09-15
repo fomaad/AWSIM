@@ -21910,8 +21910,9 @@ MonoBehaviour:
   _intersectionLane: 1
   _waypoints:
   - {x: 94.73828, y: -1.591383, z: 94.96484}
-  - {x: 98.443695, y: -1.2564647, z: 64.71425}
-  - {x: 100.03516, y: -1.1783829, z: 51.035156}
+  - {x: 96.0437, y: -1.2564647, z: 68.71425}
+  - {x: 96.7352, y: -1.1783829, z: 63.03516}
+  - {x: 98.8352, y: -1.1783829, z: 51.035156}
   _turnDirection: 0
   _nextLanes:
   - {fileID: 1144768192}
@@ -25619,7 +25620,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _intersectionLane: 0
   _waypoints:
-  - {x: 100.03516, y: -1.1783829, z: 51.035156}
+  - {x: 98.8352, y: -1.1783829, z: 51.035156}
   - {x: 104.359375, y: -1.0178814, z: 21.132812}
   _turnDirection: 0
   _nextLanes:
@@ -104064,7 +104065,7 @@ MonoBehaviour:
     - {fileID: 2050750567646310923}
     - {fileID: 2050750568823446867}
   _lightingSequences:
-  - _intervalSec: 15
+  - _intervalSec: 1000
     _groupLightingOrders:
     - _group: 0
       _bulbData:
@@ -104073,8 +104074,8 @@ MonoBehaviour:
         _status: 1
     - _group: 1
       _bulbData:
-      - _type: 1
-        _color: 0
+      - _type: 3
+        _color: 2
         _status: 1
     - _group: 10
       _bulbData:
@@ -104448,7 +104449,7 @@ MonoBehaviour:
     - {fileID: 2050750567691785376}
     - {fileID: 2050750567820010679}
   _lightingSequences:
-  - _intervalSec: 15
+  - _intervalSec: 1000
     _groupLightingOrders:
     - _group: 0
       _bulbData:
@@ -104457,8 +104458,8 @@ MonoBehaviour:
         _status: 1
     - _group: 1
       _bulbData:
-      - _type: 1
-        _color: 0
+      - _type: 3
+        _color: 2
         _status: 1
     - _group: 10
       _bulbData:

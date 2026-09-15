@@ -1,0 +1,10 @@
+{
+  "applyAngularGaussianNoise": true,
+  "applyDistanceGaussianNoise": true,
+  "applyVelocityDistortion": true,
+  "angularNoiseStDev": 1.0,
+  "angularNoiseMean": 0.0,
+  "distanceNoiseStDevBase": 0.05,
+  "distanceNoiseStDevRisePerMeter": 0.01,
+  "distanceNoiseMean": 0.0
+}

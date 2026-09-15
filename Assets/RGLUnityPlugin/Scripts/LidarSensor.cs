@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.IO;
+using Awsim.Common.DynamicCommand;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -109,14 +111,15 @@ namespace RGLUnityPlugin
 
         public void OnAwake(bool noiseEnabled)
         {
-            string log = noiseEnabled ? "enabled" : "disabled";
-            Debug.Log($"LiDAR noise is {log}.");
-            if (!noiseEnabled)
-            {
-                applyAngularGaussianNoise = false;
-                applyDistanceGaussianNoise = false;
-                applyVelocityDistortion = false;
-            }
+            // string log = noiseEnabled ? "enabled" : "disabled";
+            // Debug.Log($"LiDAR noise is {log}.");
+            // if (!noiseEnabled)
+            // {
+            //     applyAngularGaussianNoise = false;
+            //     applyDistanceGaussianNoise = false;
+            //     applyVelocityDistortion = false;
+            // }
+            LoadConfig();
             
             rglGraphLidar = new RGLNodeSequence()
                 .AddNodeRaysFromMat3x4f(lidarRaysNodeId, new Matrix4x4[1] { Matrix4x4.identity })
@@ -138,6 +141,42 @@ namespace RGLUnityPlugin
             RGLNodeSequence.Connect(rglGraphLidar, rglSubgraphCompact);
             RGLNodeSequence.Connect(rglSubgraphCompact, rglSubgraphToLidarFrame);
         }
+
+        private void LoadConfig()
+        {
+            var fileConfig = new SimConfiguration(); // default config
+            string configFilePath = Path.Combine(Application.streamingAssetsPath, "simconfig.json");
+            if (File.Exists(configFilePath))
+            {
+                try
+                {
+                    // Read the JSON text from the file
+                    string json = File.ReadAllText(configFilePath);
+                
+                    // Overwrite the object data with the JSON data
+                    fileConfig = JsonUtility.FromJson<SimConfiguration>(json);
+                    Debug.Log("Configuration loaded successfully.");
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError($"Failed to load config: {e.Message}. Use default settings.");
+                }
+            }
+            else
+            {
+                Debug.Log("No configuration file found. Use default settings.");
+            }
+
+            applyAngularGaussianNoise = fileConfig.applyAngularGaussianNoise;
+            applyDistanceGaussianNoise = fileConfig.applyDistanceGaussianNoise;
+            applyVelocityDistortion = fileConfig.applyVelocityDistortion;
+            configuration.noiseParams.angularNoiseMean = fileConfig.angularNoiseMean;
+            configuration.noiseParams.angularNoiseStDev = fileConfig.angularNoiseStDev;
+            configuration.noiseParams.distanceNoiseMean = fileConfig.distanceNoiseMean;
+            configuration.noiseParams.distanceNoiseStDevBase = fileConfig.distanceNoiseStDevBase;
+            configuration.noiseParams.distanceNoiseStDevRisePerMeter = fileConfig.distanceNoiseStDevRisePerMeter;            
+        }
+        
 
         public void Start()
         {
